@@ -1,3 +1,11 @@
+// player step and boundries
+var maxX = 400;
+var maxY = 370;
+var minX = 0;
+var minY = 0;
+var horizontalStep = 100;
+var verticalStep = 80;
+
 // Enemies our player must avoid
 var Enemy = function(x, y, speed) {
     // Variables applied to each of our instances go here,
@@ -11,6 +19,8 @@ var Enemy = function(x, y, speed) {
     this.sprite = 'images/enemy-bug.png';
 };
 
+
+
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
@@ -23,11 +33,10 @@ Enemy.prototype.update = function(dt) {
         this.x = 0;
     }
 
-    // if (player.x == this.x && player.y == this.y) {
-    //     player.y = 0;
-    //     player.x = 100;
-    // }
-
+    // Check Collision between player and enemies
+    if (player.y == this.y && player.x == (this.x + 10)) {
+        Reset();
+    }
 
 };
 
@@ -55,7 +64,8 @@ Player.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    Player.x += Player.speed * dt;
+
+    // checkCollisions(player, allEnemies);
 };
 
 Player.prototype.render = function() {
@@ -63,17 +73,12 @@ Player.prototype.render = function() {
 };
 
 
+
 // Game world boundries after trying some numbers:-
 // (min,max) => x(0,400) y(-25,375)
 Player.prototype.handleInput = function(key) {
 
-    // player step and boundries
-    var maxX = 400;
-    var maxY = 375;
-    var minX = 0;
-    var minY = -25;
-    var horizontalStep = 100;
-    var verticalStep = 80;
+
 
     // moving the player and prevent it from getting outside the game world
     if (key == 'left' && player.x > minX) {
@@ -88,6 +93,16 @@ Player.prototype.handleInput = function(key) {
     } else if (key == 'down' && player.y < maxY) {
         player.y += verticalStep;
     }
+
+
+    // Check if won the game and resetting the game
+    if (player.y <= minY) {
+        setTimeout(function() {
+            player.x = 200;
+            player.y = maxX;
+        }, 2000)
+    }
+
 };
 
 // Place all enemy objects in an array called allEnemies
@@ -102,8 +117,12 @@ for (var i = 0; i < enemyYaxis.length; i++) {
 }
 
 // allEnemies.push(new Enemy(-90, 290, randomEnemySpeed));
-var player = new Player(200, 375);
+var player = new Player(200, maxY);
 
+function Reset() {
+    player.x = 200;
+    player.y = maxY;
+}
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
