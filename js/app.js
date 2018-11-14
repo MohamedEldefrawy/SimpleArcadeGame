@@ -23,10 +23,10 @@ Enemy.prototype.update = function(dt) {
         this.x = 0;
     }
 
-    if (player.x == this.x && player.y == this.y) {
-        player.y = 0;
-        player.x = 100;
-    }
+    // if (player.x == this.x && player.y == this.y) {
+    //     player.y = 0;
+    //     player.x = 100;
+    // }
 
 
 };
@@ -62,33 +62,47 @@ Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+
+// Game world boundries after trying some numbers:-
+// (min,max) => x(0,400) y(-25,375)
 Player.prototype.handleInput = function(key) {
 
-    if (key == 'left' && player.x > 0) {
-        player.x -= 100;
+    // player step and boundries
+    var maxX = 400;
+    var maxY = 375;
+    var minX = 0;
+    var minY = -25;
+    var horizontalStep = 100;
+    var verticalStep = 80;
 
-    } else if (key == 'right' && player.x < 400) {
-        player.x += 100;
+    // moving the player and prevent it from getting outside the game world
+    if (key == 'left' && player.x > minX) {
+        player.x -= horizontalStep;
 
-    } else if (key == 'up') {
-        player.y -= 75;
+    } else if (key == 'right' && player.x < maxX) {
+        player.x += horizontalStep;
 
-    } else if (key == 'down') {
-        player.y += 100;
+    } else if (key == 'up' && player.y > minY) {
+        player.y -= verticalStep;
+
+    } else if (key == 'down' && player.y < maxY) {
+        player.y += verticalStep;
     }
 };
 
-// Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-
-// Game world boundries:-
-// (min,max) => x(0,400) y(-10,400)
-
 var allEnemies = [];
-allEnemies.push(new Enemy(-91, 50, 50));
 
-var player = new Player(200, -10);
+// allowed y-axis for the Enemy
+var enemyYaxis = [50, 130, 210, 290];
+
+for (var i = 0; i < enemyYaxis.length; i++) {
+    allEnemies.push(new Enemy(-90, enemyYaxis[i], Math.floor(Math.random() * 200) + 50));
+}
+
+// allEnemies.push(new Enemy(-90, 290, randomEnemySpeed));
+var player = new Player(200, 375);
 
 
 // This listens for key presses and sends the keys to your
