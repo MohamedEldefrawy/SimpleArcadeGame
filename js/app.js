@@ -1,10 +1,11 @@
-// player step and boundries
+// player steps  and game world boundries
 var maxX = 400;
 var maxY = 370;
 var minX = 0;
-var minY = 0;
+var minY = -30;
 var horizontalStep = 100;
 var verticalStep = 80;
+var enemyYaxis = [50, 130, 210, 290];
 
 // Enemies our player must avoid
 var Enemy = function(x, y, speed) {
@@ -30,14 +31,27 @@ Enemy.prototype.update = function(dt) {
     this.x += this.speed * dt;
 
     if (this.x > 500 || this.x < -90) {
-        this.x = 0;
+        this.x = -90;
+        this.speed = (Math.random() * 300) + 100;
     }
 
-    // Check Collision between player and enemies
-    if (player.y == this.y && player.x == (this.x + 10)) {
+    // Check collision Between player and Enemy
+    if (
+        (player.y == this.y) &&
+        (
+            (
+                (player.x) < ((this.x))
+
+            ) &&
+            (
+                (player.x + 50) > this.x
+            )
+        )
+    ) {
+        alert("Try again");
+        DestroyEnemy();
         Reset();
     }
-
 };
 
 // Draw the enemy on the screen, required method for game
@@ -65,7 +79,6 @@ Player.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
 
-    // checkCollisions(player, allEnemies);
 };
 
 Player.prototype.render = function() {
@@ -77,8 +90,6 @@ Player.prototype.render = function() {
 // Game world boundries after trying some numbers:-
 // (min,max) => x(0,400) y(-25,375)
 Player.prototype.handleInput = function(key) {
-
-
 
     // moving the player and prevent it from getting outside the game world
     if (key == 'left' && player.x > minX) {
@@ -94,13 +105,12 @@ Player.prototype.handleInput = function(key) {
         player.y += verticalStep;
     }
 
-
     // Check if won the game and resetting the game
-    if (player.y <= minY) {
-        setTimeout(function() {
-            player.x = 200;
-            player.y = maxX;
-        }, 2000)
+    if (player.y == minY) {
+        Reset();
+        DestroyEnemy();
+        GenerateEnemy();
+        alert("Congratulations");
     }
 
 };
@@ -109,19 +119,33 @@ Player.prototype.handleInput = function(key) {
 // Place the player object in a variable called player
 var allEnemies = [];
 
-// allowed y-axis for the Enemy
-var enemyYaxis = [50, 130, 210, 290];
 
-for (var i = 0; i < enemyYaxis.length; i++) {
-    allEnemies.push(new Enemy(-90, enemyYaxis[i], Math.floor(Math.random() * 200) + 50));
-}
+GenerateEnemy();
 
 // allEnemies.push(new Enemy(-90, 290, randomEnemySpeed));
 var player = new Player(200, maxY);
 
+// Generate Enemies with random speed
+function GenerateEnemy() {
+
+    // allowed y-axis for the Enemy
+    for (var i = 0; i < 4; i++) {
+        allEnemies.push(new Enemy(-90, enemyYaxis[i], Math.floor(Math.random() * 300) + 100));
+    }
+}
+
+// Clear Enemies
+function DestroyEnemy(params) {
+    allEnemies = [];
+
+}
+
+
 function Reset() {
     player.x = 200;
     player.y = maxY;
+    DestroyEnemy();
+    GenerateEnemy();
 }
 
 // This listens for key presses and sends the keys to your
